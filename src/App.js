@@ -1,24 +1,65 @@
-import logo from './logo.svg';
-import './App.css';
+
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./Components/pages/Login";
+import SignUp from "./Components/pages/SignUp";
+import TaskManager from "./Components/TaskManager";
+import "./App.css";
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleLogin = () => setIsAuthenticated(true);
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem("user"); 
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+         
+          <Route
+            path="/login"
+            element={
+              !isAuthenticated ? (
+                <Login onLogin={handleLogin} />
+              ) : (
+                <Navigate to="/task-manager" />
+              )
+            }
+          />
+
+         
+          <Route
+            path="/signup"
+            element={
+              !isAuthenticated ? (
+                <SignUp />
+              ) : (
+                <Navigate to="/task-manager" />
+              )
+            }
+          />
+
+          
+          <Route
+            path="/task-manager"
+            element={
+              isAuthenticated ? (
+                <TaskManager onLogout={handleLogout} />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+
+          
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
